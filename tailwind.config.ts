@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,47 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// AgriClim custom colors
+        agrigreen: {
+          50: '#f0f9f1',
+          100: '#dcf0de',
+          200: '#bae0bf',
+          300: '#8eca96',
+          400: '#5bac6a',
+          500: '#3d8f4e',
+          600: '#2B593F', // Primary green
+          700: '#234a33',
+          800: '#1e3c2a',
+          900: '#193324',
+          950: '#0c1c13',
+        },
+        soil: {
+          50: '#f9f6ef',
+          100: '#f1ebdc',
+          200: '#e5d9b6', // Soil beige
+          300: '#d2bc84',
+          400: '#c19e5c',
+          500: '#b18544',
+          600: '#96683a',
+          700: '#8B4513', // Earth brown
+          800: '#653325',
+          900: '#562c22',
+          950: '#2e170f',
+        },
+        sky: {
+          50: '#f0f7fb',
+          100: '#e2eff6',
+          200: '#cce2ef',
+          300: '#a4c3d2', // Sky blue
+          400: '#7aa1b9',
+          500: '#5c85a2',
+          600: '#476b88',
+          700: '#3b5770',
+          800: '#34495e',
+          900: '#2f3f50',
+          950: '#1c2836',
+        },
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +125,31 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        'fade-in-right': {
+          '0%': { opacity: '0', transform: 'translateX(20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
+        'fade-in-left': {
+          '0%': { opacity: '0', transform: 'translateX(-20px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' }
+        },
+        'bounce-subtle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' }
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.7s ease-out forwards',
+        'fade-in-right': 'fade-in-right 0.7s ease-out forwards',
+        'fade-in-left': 'fade-in-left 0.7s ease-out forwards',
+        'bounce-subtle': 'bounce-subtle 2s ease-in-out infinite'
 			}
 		}
 	},
