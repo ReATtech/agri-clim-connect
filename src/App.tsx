@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { StrictMode, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
+import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Meteo from "./pages/Meteo";
 import Culture from "./pages/Culture";
@@ -23,22 +24,28 @@ const queryClient = new QueryClient({
   },
 });
 
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/meteo" element={<Meteo />} />
+    <Route path="/culture" element={<Culture />} />
+    <Route path="/communaute" element={<Communaute />} />
+    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
           <Suspense fallback={<div>Chargement...</div>}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/meteo" element={<Meteo />} />
-              <Route path="/culture" element={<Culture />} />
-              <Route path="/communaute" element={<Communaute />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AuthProvider>
+              <Toaster />
+              <Sonner />
+              <AppRoutes />
+            </AuthProvider>
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>

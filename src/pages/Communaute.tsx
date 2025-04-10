@@ -1,14 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Lock, Mail, User, Github, Linkedin, AtSign, Eye, EyeOff, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import CommunityFeed from '@/components/CommunityFeed';
 
 const Communaute: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -16,33 +18,60 @@ const Communaute: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const { user, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   
-  // Handle mock login
-  const handleSubmit = (e: React.FormEvent) => {
+  // Rediriger l'utilisateur s'il est déjà connecté
+  useEffect(() => {
+    if (user && !loading) {
+      navigate('/communaute');
+    }
+  }, [user, loading, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // This is just a mock login - in a real application, we would:
-    // 1. Validate inputs
-    // 2. Call authentication API
-    // 3. Store tokens
-    // 4. Redirect to community page
     
-    console.log("Logging in with:", { email, password });
-    
-    // Simulate successful login and redirect
-    setTimeout(() => {
-      // In a real application, we'd navigate to the community feed page
-      // For now, we'll just display a message
-      alert("Connexion réussie! Cette fonctionnalité nécessitera une intégration backend.");
-    }, 1000);
+    if (isSignUp) {
+      await signUp(email, password, { full_name: name });
+    } else {
+      await signIn(email, password);
+    }
   };
   
   const toggleForm = () => {
     setIsSignUp(!isSignUp);
   };
 
+  // Si l'utilisateur est connecté, afficher la page communauté
+  if (user) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Helmet>
+          <title>Communauté AgriClim | Connectez-vous avec d'autres agriculteurs</title>
+          <meta name="description" content="Rejoignez la communauté AgriClim pour partager vos expériences, poser des questions et obtenir des conseils d'experts en agriculture." />
+          <meta name="keywords" content="communauté agricole, forum agriculteurs, réseau agricole, échange pratiques agricoles, conseil agricole" />
+        </Helmet>
+        <Navbar />
+        <main className="flex-grow pt-20 bg-gray-50">
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold mb-8 text-center text-agrigreen-800">Communauté AgriClim</h1>
+            <CommunityFeed />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Sinon, afficher le formulaire de connexion/inscription
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>{isSignUp ? "Inscription | AgriClim" : "Connexion | AgriClim"}</title>
+        <meta name="description" content="Rejoignez la communauté AgriClim pour accéder à des fonctionnalités exclusives et échanger avec d'autres professionnels de l'agriculture." />
+        <meta name="robots" content="noindex" />
+      </Helmet>
+      
       <Navbar />
       
       <main className="flex-grow pt-20 flex items-center justify-center bg-gray-50">
@@ -126,8 +155,12 @@ const Communaute: React.FC = () => {
                     </div>
                   </div>
                   
-                  <Button type="submit" className="w-full bg-agrigreen-600 hover:bg-agrigreen-700">
-                    {isSignUp ? "Créer un compte" : "Se connecter"}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-agrigreen-600 hover:bg-agrigreen-700"
+                    disabled={loading}
+                  >
+                    {loading ? "Chargement..." : (isSignUp ? "Créer un compte" : "Se connecter")}
                   </Button>
                 </form>
                 
