@@ -1,5 +1,6 @@
 
 import { createRoot } from 'react-dom/client'
+import { StrictMode, Suspense } from 'react';
 import App from './App.tsx'
 import './index.css'
 
@@ -10,4 +11,10 @@ if (!container) {
 }
 
 const root = createRoot(container);
-root.render(<App />);
+root.render(
+  <StrictMode>
+    <Suspense fallback={<div>Chargement...</div>}>
+      <App />
+    </Suspense>
+  </StrictMode>
+);

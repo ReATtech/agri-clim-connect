@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Logo from './Logo';
@@ -8,6 +8,8 @@ import Logo from './Logo';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   
   // Handle scroll events for navbar background change
   useEffect(() => {
@@ -26,12 +28,14 @@ const Navbar: React.FC = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'header-scrolled py-2' : 'bg-transparent py-4'
+        isHomePage 
+          ? scrolled ? 'header-scrolled py-2' : 'bg-transparent py-4' 
+          : 'bg-agrigreen-700 py-4'
       }`}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link to="/" className="z-10">
-          <Logo className={scrolled ? 'text-white' : 'text-white'} />
+          <Logo className="text-white" />
         </Link>
         
         {/* Mobile menu button */}

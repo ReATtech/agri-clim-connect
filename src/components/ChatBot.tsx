@@ -1,8 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Leaf } from 'lucide-react';
+import { MessageCircle, Send, X, Leaf, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
 
 type Message = {
   id: number;
@@ -32,7 +33,7 @@ const ChatBot: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
     
     // Add user message
@@ -46,29 +47,48 @@ const ChatBot: React.FC = () => {
     setMessages([...messages, userMessage]);
     setInput('');
     setIsTyping(true);
-    
-    // Simulate bot response (would be replaced with actual API call)
-    setTimeout(() => {
-      const botResponses = [
-        "Je peux vous fournir des informations sur les cultures adaptées à votre région.",
-        "Les conditions météorologiques actuelles sont favorables pour la culture du blé.",
-        "Pour améliorer le rendement de vos cultures, je vous recommande d'optimiser l'irrigation.",
-        "D'après les prévisions, la semaine prochaine sera idéale pour les semis.",
-        "Avez-vous envisagé des techniques d'agriculture régénérative pour votre exploitation ?",
-      ];
+
+    try {
+      // For now, we're using simulated responses, but this would be replaced with a real API call
+      // In future we'll connect to OpenAI or another AI service through Supabase Edge Functions
       
-      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+      // Simulated AI response for agricultural queries in Cameroon
+      setTimeout(() => {
+        const botResponses = [
+          "Les prévisions pour Yaoundé indiquent des pluies modérées cette semaine, idéal pour les semis de maïs et d'arachides.",
+          "Pour améliorer vos rendements de cacao, je vous conseille d'optimiser l'ombrage et le drainage pendant cette saison des pluies.",
+          "Les cultures comme le manioc et l'igname sont bien adaptées aux conditions actuelles dans l'Ouest du Cameroun.",
+          "Pour lutter contre les parasites du caféier de manière écologique, vous pouvez utiliser une solution à base de neem et de piment.",
+          "La rotation des cultures est essentielle pour maintenir la fertilité des sols tropicaux. Je vous suggère d'alterner légumineuses et céréales.",
+        ];
+        
+        const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+        
+        const botMessage: Message = {
+          id: messages.length + 2,
+          text: randomResponse,
+          sender: 'bot',
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => [...prev, botMessage]);
+        setIsTyping(false);
+      }, 1500);
       
-      const botMessage: Message = {
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      setIsTyping(false);
+      
+      // Show error message
+      const errorMessage: Message = {
         id: messages.length + 2,
-        text: randomResponse,
+        text: "Désolé, je rencontre des difficultés à répondre pour le moment. Veuillez réessayer plus tard.",
         sender: 'bot',
         timestamp: new Date(),
       };
       
-      setMessages(prev => [...prev, botMessage]);
-      setIsTyping(false);
-    }, 1500);
+      setMessages(prev => [...prev, errorMessage]);
+    }
   };
 
   return (
@@ -146,8 +166,9 @@ const ChatBot: React.FC = () => {
             <Button 
               onClick={handleSendMessage}
               className="bg-agrigreen-600 hover:bg-agrigreen-700"
+              disabled={isTyping}
             >
-              <Send size={18} />
+              {isTyping ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send size={18} />}
             </Button>
           </div>
         </div>
