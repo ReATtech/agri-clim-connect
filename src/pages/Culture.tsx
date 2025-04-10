@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Helmet } from "react-helmet-async";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ChatBot from '@/components/ChatBot';
 
-// Données fictives pour les régions
+// Données pour les cultures et régions
 interface RegionData {
   name: string;
   crops: string[];
@@ -18,33 +19,58 @@ interface RegionData {
   recommendations: string[];
 }
 
+// Base de données étendue avec des régions internationales
 const regionDatabase: Record<string, RegionData> = {
-  'paris': {
-    name: 'Île-de-France',
-    crops: ['Blé', 'Colza', 'Betterave sucrière', 'Orge'],
-    climate: 'Tempéré océanique avec des hivers doux et des étés modérés. Précipitations régulières tout au long de l\'année.',
-    soil: 'Sols majoritairement limoneux et argilo-calcaires, fertiles et adaptés à la grande culture.',
+  'yaounde': {
+    name: 'Centre (Cameroun)',
+    crops: ['Manioc', 'Plantain', 'Maïs', 'Arachide'],
+    climate: 'Équatorial avec deux saisons des pluies et deux saisons sèches. Températures moyennes de 23-26°C.',
+    soil: 'Sols ferralitiques rouges, riches en fer, bien adaptés aux cultures tropicales.',
     recommendations: [
-      'Optimisation des rotations culturales pour maintenir la fertilité des sols',
-      'Favoriser les couverts végétaux en hiver pour limiter l\'érosion',
-      'Adapter les dates de semis en fonction des conditions météorologiques',
-      'Surveillance des adventices résistantes aux herbicides'
+      'Adoption de variétés résistantes à la sécheresse',
+      'Mise en place de systèmes d\'irrigation goutte-à-goutte',
+      'Utilisation de compost pour améliorer la structure du sol',
+      'Diversification des cultures pour la résilience climatique'
     ]
   },
-  'lyon': {
-    name: 'Rhône-Alpes',
-    crops: ['Vigne', 'Maïs', 'Blé', 'Fruits à noyau'],
-    climate: 'Continental modéré avec des influences méditerranéennes. Étés chauds et hivers froids.',
-    soil: 'Variés, allant des sols alluviaux dans les vallées aux sols plus pauvres en montagne.',
+  'douala': {
+    name: 'Littoral (Cameroun)',
+    crops: ['Palmier à huile', 'Cacao', 'Ananas', 'Banane'],
+    climate: 'Tropical humide avec précipitations abondantes (3000-5000mm/an). Températures élevées et constantes.',
+    soil: 'Sols volcaniques et alluviaux fertiles, particulièrement adaptés aux cultures tropicales exigeantes.',
     recommendations: [
-      'Protection des vignobles contre les gelées tardives',
-      'Gestion de l\'irrigation pour les cultures fruitières',
-      'Diversification des cultures pour réduire les risques climatiques',
-      'Adoption de pratiques agroécologiques pour préserver les sols'
+      'Gestion de l\'excès d\'eau par des systèmes de drainage efficaces',
+      'Lutte intégrée contre les maladies favorisées par l\'humidité',
+      'Culture en terrasses pour limiter l\'érosion',
+      'Pratiques agroforestières combinant arbres fruitiers et cultures vivrières'
+    ]
+  },
+  'milan': {
+    name: 'Lombardie (Italie)',
+    crops: ['Riz', 'Maïs', 'Vignes', 'Blé'],
+    climate: 'Continental tempéré avec étés chauds et hivers froids. Précipitations réparties tout au long de l\'année.',
+    soil: 'Plaine alluviale fertile du Pô, riche en nutriments et bien irriguée.',
+    recommendations: [
+      'Rotation des cultures pour maintenir la fertilité des sols',
+      'Systèmes d\'irrigation avancés pour la riziculture',
+      'Protection des vignobles contre les gelées printanières',
+      'Adoption de pratiques agricoles de précision'
+    ]
+  },
+  'iowa': {
+    name: 'Midwest (États-Unis)',
+    crops: ['Maïs', 'Soja', 'Blé', 'Avoine'],
+    climate: 'Continental humide avec étés chauds et hivers rigoureux. Précipitations concentrées au printemps et en été.',
+    soil: 'Terres noires parmi les plus fertiles au monde, riches en matière organique.',
+    recommendations: [
+      'Techniques de conservation des sols pour limiter l\'érosion',
+      'Agriculture de précision pour optimiser les intrants',
+      'Semis direct pour préserver la structure du sol',
+      'Utilisation de cultures de couverture en hiver'
     ]
   },
   'bordeaux': {
-    name: 'Nouvelle-Aquitaine',
+    name: 'Nouvelle-Aquitaine (France)',
     crops: ['Vigne', 'Maïs', 'Tournesol', 'Fruits à coque'],
     climate: 'Océanique tempéré avec des étés chauds et des hivers doux. Précipitations modérées bien réparties.',
     soil: 'Sols variés incluant des terres viticoles prestigieuses, des sols sableux et des terres arables.',
@@ -55,28 +81,16 @@ const regionDatabase: Record<string, RegionData> = {
       'Protection des vignobles contre les maladies fongiques'
     ]
   },
-  'marseille': {
-    name: 'Provence-Alpes-Côte d\'Azur',
-    crops: ['Olive', 'Lavande', 'Vigne', 'Fruits méditerranéens'],
-    climate: 'Méditerranéen avec des étés chauds et secs, des hivers doux. Précipitations irrégulières.',
-    soil: 'Sols calcaires, parfois caillouteux, adaptés aux cultures méditerranéennes.',
+  'mendoza': {
+    name: 'Cuyo (Argentine)',
+    crops: ['Vigne', 'Olive', 'Ail', 'Pomme'],
+    climate: 'Semi-aride avec peu de précipitations. Forte amplitude thermique entre le jour et la nuit.',
+    soil: 'Sols alluviaux pierreux, pauvres en matière organique mais riches en minéraux.',
     recommendations: [
-      'Optimisation des systèmes d\'irrigation goutte-à-goutte',
-      'Adaptation des variétés aux conditions de sécheresse croissante',
-      'Protection contre le mistral par des haies brise-vent',
-      'Diversification avec des cultures résistantes à la sécheresse'
-    ]
-  },
-  'toulouse': {
-    name: 'Occitanie',
-    crops: ['Tournesol', 'Blé dur', 'Vigne', 'Maïs'],
-    climate: 'Varié, avec des influences méditerranéennes et atlantiques. Étés chauds et secs.',
-    soil: 'Diversifiés, des plaines fertiles aux sols plus pauvres des zones montagneuses.',
-    recommendations: [
-      'Adoption de variétés de blé dur adaptées aux périodes de sécheresse',
-      'Développement de l\'agriculture de conservation pour préserver les sols',
-      'Gestion des ressources en eau face aux sécheresses récurrentes',
-      'Diversification des productions pour répartir les risques'
+      'Optimisation des systèmes d\'irrigation pour économiser l\'eau',
+      'Protection contre le gel dans les zones viticoles d\'altitude',
+      'Utilisation du paillage pour conserver l\'humidité du sol',
+      'Sélection de cépages adaptés aux conditions arides'
     ]
   }
 };
@@ -142,6 +156,12 @@ const Culture: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>Guide des Cultures par Région | Données Climatiques et Recommandations - AgriClim</title>
+        <meta name="description" content="Explorez les cultures adaptées à chaque région du monde. Accédez à des données climatiques précises et des recommandations agricoles personnalisées pour optimiser vos rendements." />
+        <meta name="keywords" content="cultures régionales, agriculture par région, climat agricole, sols agricoles, recommandations culturales, cultures adaptées, agriculture durable, optimisation agricole, agro-écologie" />
+      </Helmet>
+      
       <Navbar />
       
       <main className="flex-grow pt-20">
@@ -149,10 +169,10 @@ const Culture: React.FC = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-10">
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                Cultures et données climatiques
+                Cultures et données climatiques mondiales
               </h1>
               <p className="text-agrigreen-100 max-w-2xl mx-auto">
-                Explorez les cultures adaptées à chaque région et obtenez des recommandations personnalisées basées sur les conditions locales
+                Explorez les cultures adaptées à chaque région du monde et obtenez des recommandations personnalisées basées sur les conditions locales
               </p>
             </div>
           </div>

@@ -15,3 +15,6 @@ Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
+
+# Optimized crawling
+Crawl-delay: 10

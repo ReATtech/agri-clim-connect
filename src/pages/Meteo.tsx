@@ -5,15 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Helmet } from "react-helmet-async";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ChatBot from '@/components/ChatBot';
 import { supabase } from '@/integrations/supabase/client';
 
-// Cameroon cities
+// Popular cities in Africa with focus on Cameroon
 const popularCities = [
   "Yaoundé", "Douala", "Garoua", "Bamenda", "Maroua", 
-  "Nkongsamba", "Bafoussam", "Ngaoundéré", "Bertoua", "Loum"
+  "Dakar", "Abidjan", "Lagos", "Nairobi", "Accra"
 ];
 
 // Placeholder for weather data type - will be replaced with actual API response type
@@ -110,7 +111,7 @@ const MeteoPage: React.FC = () => {
       recommendations: [
         "Conditions idéales pour la croissance du maïs et du plantain",
         "L'humidité élevée favorise la croissance du manioc et de l'igname",
-        "Bon moment pour la plantation du cacao",
+        "Bon moment pour la plantation des cultures tropicales",
         "Surveillez les signes de mildiou sur les cultures de tomates"
       ],
       alerts: [
@@ -161,6 +162,12 @@ const MeteoPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <Helmet>
+        <title>Météo Agricole | Prévisions et Données pour l'Agriculture - AgriClim</title>
+        <meta name="description" content="Consultez les prévisions météorologiques précises et recommandations agricoles personnalisées pour optimiser vos cultures. Données climatiques actualisées quotidiennement." />
+        <meta name="keywords" content="météo agricole, prévisions agricoles, données climatiques agriculture, optimisation cultures, humidité cultures, vent agriculture, météo Afrique, météo Cameroun" />
+      </Helmet>
+      
       <Navbar />
       
       <main className="flex-grow pt-20">
