@@ -22,51 +22,87 @@ export const useCommunity = () => {
       try {
         setLoading(true);
         
-        // Récupérer les posts avec les profils associés
+        // Récupérer les posts
         const { data: postsData, error: postsError } = await supabase
           .from('posts')
-          .select(`
-            *,
-            profiles:user_id(*)
-          `)
+          .select('*')
           .order('created_at', { ascending: false });
 
         if (postsError) throw postsError;
+
+        // Récupérer les profils associés aux posts
+        const userIds = postsData.map(post => post.user_id);
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*')
+          .in('id', userIds);
+
+        if (profilesError) throw profilesError;
 
         // Récupérer les likes pour chaque post
         const postIds = postsData.map(post => post.id);
         const { data: likesData, error: likesError } = await supabase
           .from('likes')
-          .select(`
-            *,
-            profiles:user_id(*)
-          `)
+          .select('*')
           .in('post_id', postIds);
 
         if (likesError) throw likesError;
 
+        // Récupérer les profils associés aux likes
+        const likeUserIds = likesData?.map(like => like.user_id) || [];
+        const { data: likeProfilesData, error: likeProfilesError } = await supabase
+          .from('profiles')
+          .select('*')
+          .in('id', likeUserIds);
+
+        if (likeProfilesError) throw likeProfilesError;
+
         // Récupérer les commentaires pour chaque post
         const { data: commentsData, error: commentsError } = await supabase
           .from('comments')
-          .select(`
-            *,
-            profiles:user_id(*)
-          `)
+          .select('*')
           .in('post_id', postIds)
           .order('created_at', { ascending: true });
 
         if (commentsError) throw commentsError;
 
-        // Associer les likes et commentaires aux posts
+        // Récupérer les profils associés aux commentaires
+        const commentUserIds = commentsData?.map(comment => comment.user_id) || [];
+        const { data: commentProfilesData, error: commentProfilesError } = await supabase
+          .from('profiles')
+          .select('*')
+          .in('id', commentUserIds);
+
+        if (commentProfilesError) throw commentProfilesError;
+
+        // Créer un Map de tous les profils
+        const profilesMap = new Map();
+        [...(profilesData || []), ...(likeProfilesData || []), ...(commentProfilesData || [])].forEach(profile => {
+          if (profile) profilesMap.set(profile.id, profile);
+        });
+
+        // Associer les likes, commentaires et profils aux posts
         const postsWithRelations = postsData.map(post => {
           const postLikes = likesData?.filter(like => like.post_id === post.id) || [];
           const postComments = commentsData?.filter(comment => comment.post_id === post.id) || [];
           
+          // Ajouter les profils aux likes et commentaires
+          const likesWithProfiles = postLikes.map(like => ({
+            ...like,
+            profile: profilesMap.get(like.user_id)
+          }));
+
+          const commentsWithProfiles = postComments.map(comment => ({
+            ...comment,
+            profile: profilesMap.get(comment.user_id)
+          }));
+
           return {
             ...post,
-            likes: postLikes,
-            comments: postComments
-          };
+            profile: profilesMap.get(post.user_id),
+            likes: likesWithProfiles,
+            comments: commentsWithProfiles
+          } as Post;
         });
 
         setPosts(postsWithRelations);

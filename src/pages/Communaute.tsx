@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CommunityLayout from '@/components/community/CommunityLayout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { 
+  Lock, 
+  Mail, 
+  User, 
+  Github, 
+  Linkedin, 
+  AtSign, 
+  Eye, 
+  EyeOff 
+} from 'lucide-react';
 
 const Communaute: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
-  
+
   // Si l'utilisateur n'est pas connecté et le chargement est terminé, afficher le formulaire de connexion
   if (!user && !loading) {
     return (
@@ -24,16 +38,45 @@ const Communaute: React.FC = () => {
         
         <main className="flex-grow pt-20 flex items-center justify-center bg-gray-50">
           <div className="container mx-auto px-4 py-12">
-            <div className="max-w-lg mx-auto text-center mb-8">
-              <h1 className="text-3xl font-bold text-agrigreen-800 mb-4">Bienvenue dans la Communauté AgriClim</h1>
-              <p className="text-gray-600">
-                Veuillez vous connecter ou créer un compte pour accéder à la communauté et échanger avec d'autres agriculteurs.
-              </p>
-            </div>
-            
-            {/* Le formulaire de connexion/inscription est géré dans le composant AuthForm */}
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <LoginSignupForm isSignUp={false} />
+            <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+              <div className="flex flex-col md:flex-row">
+                <div className="md:w-1/2 bg-agrigreen-600 p-8 text-white">
+                  <h2 className="text-2xl font-bold mb-4">Bienvenue dans la Communauté AgriClim</h2>
+                  <p className="mb-6">Rejoignez notre communauté d'agriculteurs et d'experts pour partager vos expériences et améliorer vos pratiques agricoles.</p>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                        <User className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Réseau d'agriculteurs</p>
+                        <p className="text-sm opacity-80">Connectez-vous avec vos pairs</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                        <Mail className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Conseils d'experts</p>
+                        <p className="text-sm opacity-80">Accédez à des connaissances précieuses</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                        <AtSign className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Restez informé</p>
+                        <p className="text-sm opacity-80">Actualités et tendances du secteur</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="md:w-1/2 p-8">
+                  <LoginSignupForm isSignUp={false} />
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -82,16 +125,16 @@ const LoginSignupForm: React.FC<{ isSignUp: boolean }> = ({ isSignUp: initialIsS
   const toggleForm = () => {
     setIsSignUp(!isSignUp);
   };
-
-  // Importer les composants et icônes nécessaires ici...
-  // ... keep existing code (imports, props destructuring, etc.)
   
   return (
-    // ... keep existing code (login/signup form)
     <form onSubmit={handleSubmit} className="space-y-4">
+      <h3 className="text-xl font-semibold text-gray-800 mb-6">
+        {isSignUp ? 'Créer un compte' : 'Connexion'}
+      </h3>
+      
       {isSignUp && (
         <div className="space-y-2">
-          <Label htmlFor="name">Nom complet</Label>
+          <Label htmlFor="name" className="text-gray-700">Nom complet</Label>
           <div className="relative">
             <Input
               id="name"
@@ -108,7 +151,7 @@ const LoginSignupForm: React.FC<{ isSignUp: boolean }> = ({ isSignUp: initialIsS
       )}
       
       <div className="space-y-2">
-        <Label htmlFor="email">Adresse email</Label>
+        <Label htmlFor="email" className="text-gray-700">Adresse email</Label>
         <div className="relative">
           <Input
             id="email"
@@ -125,7 +168,7 @@ const LoginSignupForm: React.FC<{ isSignUp: boolean }> = ({ isSignUp: initialIsS
       
       <div className="space-y-2">
         <div className="flex justify-between">
-          <Label htmlFor="password">Mot de passe</Label>
+          <Label htmlFor="password" className="text-gray-700">Mot de passe</Label>
           {!isSignUp && (
             <a href="#" className="text-xs text-agrigreen-600 hover:text-agrigreen-700">
               Mot de passe oublié ?
@@ -215,11 +258,5 @@ const LoginSignupForm: React.FC<{ isSignUp: boolean }> = ({ isSignUp: initialIsS
     </form>
   );
 };
-
-// Importer les composants nécessaires
-import { Lock, Mail, User, Github, Linkedin, AtSign, Eye, EyeOff, ChevronRight } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export default Communaute;

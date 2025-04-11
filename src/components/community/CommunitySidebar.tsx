@@ -107,10 +107,10 @@ const CommunitySidebar: React.FC<CommunitySidebarProps> = ({ users }) => {
 
   return (
     <>
-      <div className="sticky top-24 space-y-4">
+      <div className="sticky top-24 space-y-4 flex flex-col h-[calc(100vh-150px)]">
         <SearchBar onSearch={handleSearch} />
         
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden flex-grow">
           <CardHeader className="bg-agrigreen-600 text-white p-4">
             <div className="flex justify-between items-center">
               <CardTitle className="text-lg font-bold flex items-center">
@@ -122,8 +122,8 @@ const CommunitySidebar: React.FC<CommunitySidebarProps> = ({ users }) => {
               </span>
             </div>
           </CardHeader>
-          <CardContent className="p-3">
-            <div className="max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
+          <CardContent className="p-3 overflow-auto h-[calc(100%-70px)]">
+            <div className="max-h-full overflow-y-auto pr-1 custom-scrollbar">
               <AnimatePresence>
                 {filteredUsers.slice(0, 20).map((user, index) => (
                   <motion.div
@@ -147,7 +147,7 @@ const CommunitySidebar: React.FC<CommunitySidebarProps> = ({ users }) => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="mt-auto">
           <CardContent className="p-3">
             <div className="flex items-center space-x-3 my-2">
               <Avatar className="h-12 w-12 ring-2 ring-agrigreen-200">
@@ -208,7 +208,7 @@ const CommunitySidebar: React.FC<CommunitySidebarProps> = ({ users }) => {
         />
       )}
       
-      <style jsx>{`
+      <style jsx global>{`
         .search-animation {
           position: absolute;
           width: 200%;
